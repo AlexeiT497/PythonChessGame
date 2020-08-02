@@ -923,7 +923,7 @@ def minimax(depth, maximizing):
                 else:
                     computer_pieces = [x[:] for x in copy]
 
-                if beta <= alpha:
+                if beta >= alpha:
                     break
 
                 #except Exception as e:
@@ -950,7 +950,7 @@ def minimax(depth, maximizing):
 
                 minimax(depth - 1, True)
 
-                if beta <= alpha:
+                if beta >= alpha:
                     break
 
         depth = 3

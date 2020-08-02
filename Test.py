@@ -1,7 +1,6 @@
 import sys
 import pygame as pg
 import math
-
 import time
 import itertools
 

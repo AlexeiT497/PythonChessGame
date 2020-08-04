@@ -23,7 +23,7 @@ chrs = {
 }
 
 image_chrs = {
-    'w_pawn': pg.image.load("img\whitep.png"),
+    'w_pawn': pg.image.load("img/whitep.png"),
     'w_rook': pg.image.load("img\whiter.png"),
     'w_knight': pg.image.load("img\whiten.png"),
     'w_bishop':pg.image.load("img\whiteb.png"),

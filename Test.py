@@ -24,17 +24,17 @@ chrs = {
 
 image_chrs = {
     'w_pawn': pg.image.load("img/whitep.png"),
-    'w_rook': pg.image.load("img\whiter.png"),
-    'w_knight': pg.image.load("img\whiten.png"),
-    'w_bishop':pg.image.load("img\whiteb.png"),
-    'w_king': pg.image.load("img\whitek.png"),
-    'w_queen': pg.image.load("img\whiteq.png"),
-    'b_pawn': pg.image.load("img\\blackp.png"),
-    'b_rook': pg.image.load("img\\blackr.png"),
-    'b_knight': pg.image.load("img\\blackn.png"),
-    'b_bishop': pg.image.load("img\\blackb.png"),
-    'b_king': pg.image.load("img\\blackk.png"),
-    'b_queen': pg.image.load("img\\blackq.png")
+    'w_rook': pg.image.load("img/whiter.png"),
+    'w_knight': pg.image.load("img/whiten.png"),
+    'w_bishop':pg.image.load("img/whiteb.png"),
+    'w_king': pg.image.load("img/whitek.png"),
+    'w_queen': pg.image.load("img/whiteq.png"),
+    'b_pawn': pg.image.load("img/blackp.png"),
+    'b_rook': pg.image.load("img/blackr.png"),
+    'b_knight': pg.image.load("img/blackn.png"),
+    'b_bishop': pg.image.load("img/blackb.png"),
+    'b_king': pg.image.load("img/blackk.png"),
+    'b_queen': pg.image.load("img/blackq.png")
 }
 
 

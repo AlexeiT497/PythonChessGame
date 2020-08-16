@@ -5,6 +5,7 @@ import time
 import itertools
 
 sys.setrecursionlimit(100000)
+
 chrs = {
     'b_checker': u'\u25FB',
     'w_pawn': u'\u265F',
@@ -23,18 +24,18 @@ chrs = {
 }
 
 image_chrs = {
-    'w_pawn': pg.image.load("img/whitep.png"),
-    'w_rook': pg.image.load("img/whiter.png"),
-    'w_knight': pg.image.load("img/whiten.png"),
-    'w_bishop':pg.image.load("img/whiteb.png"),
-    'w_king': pg.image.load("img/whitek.png"),
-    'w_queen': pg.image.load("img/whiteq.png"),
-    'b_pawn': pg.image.load("img/blackp.png"),
-    'b_rook': pg.image.load("img/blackr.png"),
-    'b_knight': pg.image.load("img/blackn.png"),
-    'b_bishop': pg.image.load("img/blackb.png"),
-    'b_king': pg.image.load("img/blackk.png"),
-    'b_queen': pg.image.load("img/blackq.png")
+    'w_pawn': pg.image.load("img\whitep.png"),
+    'w_rook': pg.image.load("img\whiter.png"),
+    'w_knight': pg.image.load("img\whiten.png"),
+    'w_bishop':pg.image.load("img\whiteb.png"),
+    'w_king': pg.image.load("img\whitek.png"),
+    'w_queen': pg.image.load("img\whiteq.png"),
+    'b_pawn': pg.image.load("img\\blackp.png"),
+    'b_rook': pg.image.load("img\\blackr.png"),
+    'b_knight': pg.image.load("img\\blackn.png"),
+    'b_bishop': pg.image.load("img\\blackb.png"),
+    'b_king': pg.image.load("img\\blackk.png"),
+    'b_queen': pg.image.load("img\\blackq.png")
 }
 
 
@@ -44,17 +45,17 @@ piece_value = {
     chrs['b_rook']: -50,
     chrs['b_knight']: -30,
     chrs['b_bishop']: -30,
-    chrs['b_king']: -900,
+    chrs['b_king']: -9000,
     chrs['b_queen']: -90,
     chrs['w_pawn']: 10,
     chrs['w_rook']: 50,
     chrs['w_knight']: 30,
     chrs['w_bishop']: 30,
-    chrs['w_king']: 900,
-    chrs['w_queen']: 90
+    chrs['w_king']: 9000,
+    chrs['w_queen']: 90,
+    "best_piece": -100,
+    "worst_piece": 100
 }
-
-total_turns = 0
 
 checkered_board = []
 from_pos = []
@@ -113,16 +114,23 @@ def display_board():
     for i in copy_board:
         print("    ". join(i))
 
-def value(coordinates):
+def value(coordinates, best_piece, depth):
     global piece_value
     return_value = 0
+
     for i in human_pieces:
         if i[1] == coordinates[0] and i[2] == coordinates[1]:
+
+            if coordinates[0] == best_piece[1] and coordinates[1] == best_piece[2]:
+                return -700
+
             return_value = piece_value[i[0]]
             return return_value
 
     for i in computer_pieces:
         if i[1] == coordinates[0] and i[2] == coordinates[1]:
+            if coordinates[0] == best_piece[1] and coordinates[1] == best_piece[2]:
+                return 700
             return_value = piece_value[i[0]]
             return return_value
 
@@ -201,7 +209,6 @@ def delete_piece(moving):
 def return_possible_moves(piece_list):
     global human_pieces
     global computer_pieces
-    global total_turns
     global chrs
     return_list = []
     perm = True
@@ -239,7 +246,7 @@ def return_possible_moves(piece_list):
                 perm = False
 
         for counter, i in enumerate(human_pieces):
-            if piece_list[1] + 1 == i[1] and piece_list[2] == i[2]:
+            if (piece_list[1] + 1 == i[1] and piece_list[2] == i[2]) or (piece_list[1] + 2 == i[1] and piece_list[2] == i[2]):
                 perm = False
 
             elif counter == len(human_pieces) - 1 and perm:
@@ -872,12 +879,12 @@ def minimax(depth, maximizing):
     global best_piece
     global score
     global counter
-    global total_turns
     global worst_score
     global worster_score
     global human_copy
     global human_pieces
     global worst_initial_pos
+    global worster_initial_pos
     global worst_move_pos
     global worst_piece
     global worst_pos
@@ -885,75 +892,77 @@ def minimax(depth, maximizing):
     global best_pos
     global alpha
     global beta
+    global previous_score
+    global previous_worst_score
     global actual_best_pos
 
     counter = counter + 1
 
-    if depth == 0:
-        human_pieces = [x[:] for x in human_copy]
-        computer_pieces = [x[:] for x in copy]
+    if counter > 10000000:
+        return
 
+    if depth == 0:
+        computer_pieces = [x[:] for x in copy]
+        human_pieces = [x[:] for x in human_copy]
 
     if maximizing:
         for i in computer_pieces:
             for j in return_possible_moves(i):
+                if depth == 2:
 
-                if depth == 3:
                     computer_pieces = [x[:] for x in copy]
                     initial_pos = i
                     move_pos = [j[0], j[1]]
+                    if counter <= 2:
+                        best_piece = initial_pos
+                        best_pos = move_pos
 
                 computer_updater([i[1], i[2]], [j[0], j[1]])
 
-                score = -value([j[0], j[1]])
+                delete_piece(j)
 
-                #try:
+                score = score + value([j[1], j[0]], worster_initial_pos, depth)
 
-                if (score + value(worst_pos)) * depth > best_score and move_pos in return_possible_moves(initial_pos):
-                    best_score = (score + value(worst_pos))
+                if score > best_score and move_pos in return_possible_moves(i):
+                    best_score = score
                     best_piece = initial_pos
                     best_pos = move_pos
                     actual_best_pos = [j[0], j[1]]
 
-                alpha = best_score
+                if depth == 0:
+                    score = 0
 
-                if depth > 0:
-                    minimax(depth - 1, False)
-                else:
-                    computer_pieces = [x[:] for x in copy]
+            if depth > 0:
+                minimax(depth - 1, False)
+            else:
+                computer_pieces = [x[:] for x in copy]
 
-                if beta >= alpha:
-                    break
-
-                #except Exception as e:
-                    #pass
-
-        depth = 3
+        depth = 2
 
 
     else:
         for i in human_pieces:
             for j in return_possible_moves(i):
+                if depth == 2 - 1:
+                    worst_initial_pos = i
+                    worst_move_pos = [j[1], j[0]]
 
-                worst_initial_pos = i
-                worst_move_pos = [j[0], j[1]]
                 human_updater([i[1], i[2]], [j[0], j[1]])
 
-                worst_score = -value([j[0], j[1]])
+                delete_piece(j)
+                worst_score = worst_score + value([j[1], j[0]], best_piece, depth) * -1 + value(best_piece, actual_best_pos, depth)
 
-                if (worst_score + value(actual_best_pos)) * depth < worster_score:
-                    worst_pos = worst_move_pos
-                    worster_score = (worst_score + value(actual_best_pos))
+                if worst_score < worster_score:
+                    worst_pos = [j[1], j[0]]
+                    worster_score = worst_score
+                    worster_initial_pos = worst_initial_pos
 
-                beta = worster_score
+                if depth == 1:
+                    worst_score = 0
 
-                minimax(depth - 1, True)
+            minimax(depth - 1, True)
 
-                if beta >= alpha:
-                    break
-
-        depth = 3
-
+        depth = 2
 
 pg.init()
 
@@ -1009,23 +1018,28 @@ while not game_exit:
         human_copy = [x[:] for x in human_pieces]
         best_pos = [0, 0]
         worst_score = 2000
-        best_piece = []
+        best_piece = [0, 0]
         score = -2000
-        best_score = -2000
+        best_score = -20000
         alpha = -2000
         beta = 2000
-        worster_score = 2000
+        worster_score = 20000
         counter = 0
         initial_pos = []
-        worst_initial_pos = []
+        worster_initial_pos = [0, 0]
         move_pos = []
         worst_pos = [0, 0]
         worst_piece = []
+        previous_worst_score = 0
+        previous_score = 0
         actual_best_pos = [0, 0]
         counter = 0
         from_pos = []
         to_pos = []
-        minimax(3, True)
+        first_time = time.time()
+        minimax(2, True)
+        print(time.time() - first_time)
+        print(counter)
 
         print(best_piece[1], best_piece[2], best_pos)
         print(best_score, worster_score)

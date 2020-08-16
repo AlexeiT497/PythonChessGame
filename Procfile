@@ -1,1 +1,0 @@
-worker: python Test.py -log-file-
